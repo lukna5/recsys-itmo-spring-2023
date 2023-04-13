@@ -24,6 +24,11 @@ class Catalog:
         self.tracks = []
         self.top_tracks = []
         self.tracks_with_diverse_recs = []
+        self.best_track = {}
+        self.last_not_bad_track = {}
+        self.users_loving_artists = {}
+        self.fails = {}
+        self.favourite_artist = {}
 
     # TODO Seminar 6 step 1: Configure reading tracks with diverse recommendations
     def load(self, catalog_path, top_tracks_path, tracks_with_diverse_recs_path):

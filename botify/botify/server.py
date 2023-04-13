@@ -16,6 +16,7 @@ from botify.recommenders.sticky_artist import StickyArtist
 from botify.recommenders.toppop import TopPop
 from botify.recommenders.indexed import Indexed
 from botify.recommenders.contextual import Contextual
+from botify.recommenders.my_recommender import MyRecommender
 from botify.track import Catalog
 
 import numpy as np
@@ -74,21 +75,11 @@ class NextTrack(Resource):
         args = parser.parse_args()
 
         # TODO Seminar 6 step 6: Wire RECOMMENDERS A/B experiment
-        treatment = Experiments.RECOMMENDERS.assign(user)
+        treatment = Experiments.MY_RECOMMENDER.assign(user)
         if treatment == Treatment.T1:
-            recommender = StickyArtist(tracks_redis.connection, artists_redis.connection, catalog)
-        elif treatment == Treatment.T2:
-            recommender = TopPop(tracks_redis.connection, catalog.top_tracks[:100])
-        elif treatment == Treatment.T3:
-            recommender = Indexed(tracks_redis.connection, recommendations_ub_redis.connection, catalog)
-        elif treatment == Treatment.T4:
-            recommender = Indexed(tracks_redis.connection, recommendations_redis.connection, catalog)
-        elif treatment == Treatment.T5:
-            recommender = Contextual(tracks_redis.connection, catalog)
-        elif treatment == Treatment.T6:
-            recommender = Contextual(tracks_with_diverse_recs_redis.connection, catalog)
+            recommender = MyRecommender(tracks_redis.connection, artists_redis.connection, catalog)
         else:
-            recommender = Random(tracks_redis.connection)
+            recommender = Contextual(tracks_redis.connection, catalog)
 
         recommendation = recommender.recommend_next(user, args.track, args.time)
 
@@ -130,5 +121,5 @@ api.add_resource(LastTrack, "/last/<int:user>")
 
 
 if __name__ == "__main__":
-    http_server = WSGIServer(("", 5000), app)
+    http_server = WSGIServer(("", 7777), app)
     http_server.serve_forever()
